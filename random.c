@@ -1,56 +1,69 @@
-// Package Files
 #include    "data/scripts/dc_d20/config.h"
+#import    "data/scripts/dc_d20/negative.c"
 
-// Lowest number random generator can return.
-int dc_d20_get_range_min()
+/* 
+* Lowest number random generator can return.
+*/
+
+int dc_d20_get_member_range_min()
 {
-	int instance;
-	instance = dc_d20_get_instance();
+    char id = dc_d20_get_instance() + DC_D20_MEMBER_RANGE_MIN;
+    void result = getlocalvar(id);
 
-	void result = getlocalvar(instance + DC_D20_MEMBER_RANGE_MIN);
+    if (typeof(result) != openborconstant("VT_INTEGER"))
+    {
+        result = DC_D20_DEFAULT_RANGE_MIN;
+    }
 
-	if (typeof(result) == openborconstant("VT_EMPTY"))
-	{
-		result = DC_D20_DEFAULT_RANGE_MIN;
-	}
-
-	return result;
+    return result;
 }
 
-void dc_d20_set_range_min(int value)
+void dc_d20_set_member_range_min(int value)
 {
-	int instance;
-	instance = dc_d20_get_instance();
+    char id = dc_d20_get_instance() + DC_D20_MEMBER_RANGE_MIN;
 
-	setlocalvar(instance + DC_D20_MEMBER_RANGE_MIN, value);
+    if (value == DC_D20_DEFAULT_RANGE_MIN)
+    {
+        value = NULL();
+    }
+
+    setlocalvar(id, value);
 }
 
-// Highest number random generator can return.
-int dc_d20_get_range_max()
+
+/* 
+* Highest number random generator can return.
+*/
+int dc_d20_get_member_range_max()
 {
-	int instance;
-	instance = dc_d20_get_instance();
+    char id = dc_d20_get_instance() + DC_D20_MEMBER_RANGE_MAX;
+    void result = getlocalvar(id);
 
-	void result = getlocalvar(instance + DC_D20_MEMBER_RANGE_MAX);
+    if (typeof(result) != openborconstant("VT_INTEGER"))
+    {
+        result = DC_D20_DEFAULT_RANGE_MAX;
+    }
 
-	if (typeof(result) == openborconstant("VT_EMPTY"))
-	{
-		result = DC_D20_DEFAULT_RANGE_MAX;
-	}
-
-	return result;
+    return result;
 }
 
-void dc_d20_set_range_max(int value)
+void dc_d20_set_member_range_max(int value)
 {
-	int instance;
-	instance = dc_d20_get_instance();
+    char id = dc_d20_get_instance() + DC_D20_MEMBER_RANGE_MAX;
 
-	setlocalvar(instance + DC_D20_MEMBER_RANGE_MAX, value);
+    if (value == DC_D20_DEFAULT_RANGE_MAX)
+    {
+        value = NULL();
+    }
+
+    setlocalvar(id, value);
 }
 
-// Generate random value between
-// upper and lower boundaries.
+
+/*
+* Generate random value between
+* upper and lower boundaries.
+*/
 int dc_d20_random_int()
 {
     int result;
@@ -67,28 +80,41 @@ int dc_d20_generate_random_int()
     int upper_bound;
     int mod;
 
-    // Get upper and lower bound settings.
-    lower_bound = dc_d20_get_range_min();
-    upper_bound = dc_d20_get_range_max();
+    /*
+    * Get upper and lower bound settings.
+    */
+    lower_bound = dc_d20_get_member_range_min();
+    upper_bound = dc_d20_get_member_range_max();
 
-    // OpenBOR's random generator is a bit odd,
-    // so we'll need to do some math work to get
-    // usable values.
+    /*
+    * OpenBOR's random generator is a bit odd,
+    * so we'll need to do some math work to get
+    * usable values.
+    */
 
-    // Find difference between desired min and max,
-    // then add 1 to create random seed.
+    /* 
+    * Find difference between desired min and max,
+    * then add 1 to create random seed.
+    */
     mod = (upper_bound - lower_bound) + 1;
-
-    // Generate random number.
+	
+    /*
+    * Generate random number.
+    */
     result  = rand()%mod;
 
-    // If resulting random number is negative, convert to positive.
-    if (result < 0)
+    /*
+    * Unless we also negatives, make sure the result
+    * is a positive value.
+    */
+    if (result < 0 && dc_d20_get_allow_negative() == DC_D20_ALLOW_NEGATIVE_FALSE)
     {
         result = result * -1;
     }
 
-    // Add minimum for final result.
+    /*
+    * Apply lower bound cap if needed.
+    */
     result = result + lower_bound;
 
     // Return final result.
