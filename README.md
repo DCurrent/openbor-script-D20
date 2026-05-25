@@ -5,49 +5,49 @@ Load this library into your module projects to enable controllable random number
 
 ## Dependencies
 
-[DC Instance](https://github.com/DCurrent/openbor-script-instance)
+None
 
 ## Installation
 
-1. Install any listed dependencies. See an individual dependency's readme for specific instructions.
 1. Download and unzip the [latest release](../../releases).
 1. Place the *dc_d20* folder into your *data/scripts* folder.
 1. Add ```#include data/scripts/dc_d20/main.c``` into any other script you would like to add this library’s functionality to. Note any of the "DC" library series listing this as a dependency will already have this step completed.
-1. (Optional) Open *config.h* to modify default values used in the library.
+1. (Optional, highly reccomended) - Add *keyall.c* to *data/scripts* folder if it does not exist already. Include the library as above, then add the following code into *main()*:
+
+```c
+int player_index = getlocalvar("player");
+int key_press = getplayerproperty(player_index, "keys");
+
+/* 
+* Update entropy seed with key press and player 
+* index to add human based entropy to random number 
+* generation.
+*/
+dc_d20_update_entropy_seed(key_press ^ player_index);
+```
+
+This will improve the randomness by introducing human etrophy to the random generation.
 
 ## Use Cases
 
-Generate a random integer between lower and upper boundry. If you do not set upper and lower boundries, default values will be used.
+Generate a random integer between lower and upper boundry. 
 ```c
-int i = dc_d20_int();
+
+int lower_bound = 0;
+int upper_bound = 10;
+
+int i = dc_d20_generate_random_int(lower_bound, upper_bound);
 ```
 
-### Configuration
-
-#### Range
-
-Get current lower boundry for number generation.
+Update the entrophy seed. It is reccomended to run this in the keyall event to add human entrphy into random generation.
 ```c
-int i = dc_d20_get_member_range_min();
+int additional_entropy = 1;
+
+int updated_seed = dc_d20_update_entropy_seed(additional_entropy);
 ```
 
-Get current upper boundry.
+Gets current entrophy seed without modifying.
 ```c
-int i = dc_d20_get_member_range_max();
+int entrophy_seed = dc_d20_update_entropy_seed();
 ```
-
-Set a new lower boundry.
-```c
-int i = {int};
-
-dc_d20_set_member_range_min(i);
-```
-
-Set a new upper boundry.
-```c
-int i = {int};
-
-dc_d20_set_member_range_max(i);
-```
-
 
