@@ -9,10 +9,10 @@ None
 
 ## Installation
 
-1. Download and unzip the [latest release](../../releases).
+1. Download and unpack the [latest release](../../releases).
 1. Place the *dc_d20* folder into your *data/scripts* folder.
 1. Add ```#include data/scripts/dc_d20/main.c``` into any other script you would like to add this library’s functionality to. Note any of the "DC" library series listing this as a dependency will already have this step completed.
-1. (Optional, highly reccomended) - Add *keyall.c* to *data/scripts* folder if it does not exist already. Include the library as above, then add the following code into *main()*:
+1. (Optional, highly recommended) - Add *keyall.c* to *data/scripts* folder if it does not exist already. Include the library as above, then add the following code into *main()*:
 
 ```c
 int player_index = getlocalvar("player");
