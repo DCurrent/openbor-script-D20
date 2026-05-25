@@ -1,53 +1,69 @@
 # DC D20
-Generate random values in OpenBOR script.
 
-Load this library into your module projects to enable controllable random number generation. 
+Generate random values in OpenBOR Script.
+
+Load this library into your module projects to enable controllable random number generation.
 
 ## Dependencies
 
-None
+None.
 
 ## Installation
 
 1. Download and unpack the [latest release](../../releases).
-1. Place the *dc_d20* folder into your *data/scripts* folder.
-1. Add ```#include data/scripts/dc_d20/main.c``` into any other script you would like to add this library’s functionality to. Note any of the "DC" library series listing this as a dependency will already have this step completed.
-1. (Optional, highly recommended) - Add *keyall.c* to *data/scripts* folder if it does not exist already. Include the library as above, then add the following code into *main()*:
+1. Place the `dc_d20` folder into your `data/scripts` folder.
+1. Add the following include to any script where you want to use this library:
 
 ```c
-int player_index = getlocalvar("player");
-int key_press = getplayerproperty(player_index, "keys");
-
-/* 
-* Update entropy seed with key press and player 
-* index to add human based entropy to random number 
-* generation.
-*/
-dc_d20_update_entropy_seed(key_press ^ player_index);
+#include "data/scripts/dc_d20/main.c"
 ```
 
-This will improve the randomness by introducing human etrophy to the random generation.
+Any DC library that lists DC D20 as a dependency may already include it.
+
+## Optional: Add Player Input Entropy
+
+Highly recommended: Add `keyall.c` to your `data/scripts` folder if it does not exist already. Include the library as above, then add the following code inside `main()`:
+
+```c
+#include "data/scripts/dc_d20/main.c"
+
+void main()
+{
+    int player_index = getlocalvar("player");
+    int key_press = getplayerproperty(player_index, "keys");
+    int player_entropy = (player_index + 1) << 16;
+
+    /*
+     * Mix key state and player identity into the entropy seed.
+     * This helps player input influence future random values.
+     */
+    dc_d20_update_entropy_seed(key_press ^ player_entropy);
+}
+```
+
+This improves randomness by introducing human entropy into random generation.
 
 ## Use Cases
 
-Generate a random integer between lower and upper boundry. 
-```c
+Generate a random integer between lower and upper boundary.
 
+```c
 int lower_bound = 0;
 int upper_bound = 10;
 
 int i = dc_d20_generate_random_int(lower_bound, upper_bound);
 ```
 
-Update the entrophy seed. It is reccomended to run this in the keyall event to add human entrphy into random generation.
+Update the entropy seed. It is recommended to run this in the `keyall` event to add human entropy into random generation.
+
 ```c
 int additional_entropy = 1;
 
 int updated_seed = dc_d20_update_entropy_seed(additional_entropy);
 ```
 
-Gets current entrophy seed without modifying.
-```c
-int entrophy_seed = dc_d20_update_entropy_seed();
-```
+Get the current entropy seed without modifying it.
 
+```c
+int entropy_seed = dc_d20_get_entropy_seed();
+```
