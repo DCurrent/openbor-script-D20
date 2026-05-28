@@ -1,0 +1,7 @@
+#ifndef DC_D20_CONFIG 
+#define DC_D20_CONFIG 1
+
+#define DC_D20_VARKEY_ENTROPY_SEED "dcd200"
+#define DC_D20_INTEGER_MASK_31BIT 0x7FFFFFFF
+
+#endif
